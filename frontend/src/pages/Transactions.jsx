@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({ title: '', amount: '', category: '', type: 'Expense', date: '', note: '' });
   const [editingId, setEditingId] = useState(null);
   const [filters, setFilters] = useState({ type: '', category: '', startDate: '', endDate: '' });
@@ -18,7 +19,24 @@ const Transactions = () => {
     } catch (err) { console.error(err); }
   };
 
-  useEffect(() => { fetchTransactions(); }, [filters]);
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/categories', config);
+      setCategories(res.data);
+    } catch (err) { console.error(err); }
+  };
+
+  useEffect(() => { 
+    fetchTransactions(); 
+    fetchCategories();
+  }, [filters]);
+
+  useEffect(() => {
+    // Clear category if it's not valid for the selected type
+    if (form.category && !categories.find(c => c.name === form.category && c.type === form.type)) {
+      setForm({ ...form, category: '' });
+    }
+  }, [form.type, categories]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,6 +80,12 @@ const Transactions = () => {
           <option value="Income">Income</option>
           <option value="Expense">Expense</option>
         </select>
+        <select className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
+          <option value="">All Categories</option>
+          {categories.map(c => (
+            <option key={c._id} value={c.name}>{c.name}</option>
+          ))}
+        </select>
         <input type="date" className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
         <input type="date" className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
       </div>
@@ -99,7 +123,12 @@ const Transactions = () => {
                 <option value="Expense">Expense</option>
                 <option value="Income">Income</option>
               </select>
-              <input type="text" placeholder="Category" className="form-control" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required />
+              <select className="form-control" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required>
+                <option value="">Select Category</option>
+                {categories.filter(c => c.type === form.type).map(c => (
+                  <option key={c._id} value={c.name}>{c.name}</option>
+                ))}
+              </select>
               <input type="date" className="form-control" value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
               <textarea placeholder="Note" className="form-control" value={form.note} onChange={e => setForm({...form, note: e.target.value})}></textarea>
               

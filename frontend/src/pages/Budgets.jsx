@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const Budgets = () => {
   const [budgets, setBudgets] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({ category: '', amount: '' });
   const [showModal, setShowModal] = useState(false);
   const [transactions, setTransactions] = useState([]);
@@ -11,12 +12,14 @@ const Budgets = () => {
   const config = { headers: { Authorization: `Bearer ${token}` } };
 
   const fetchData = async () => {
-    const [budgetRes, transRes] = await Promise.all([
+    const [budgetRes, transRes, catRes] = await Promise.all([
       axios.get('http://localhost:5000/api/budgets', config),
-      axios.get('http://localhost:5000/api/transactions', config)
+      axios.get('http://localhost:5000/api/transactions', config),
+      axios.get('http://localhost:5000/api/categories', config)
     ]);
     setBudgets(budgetRes.data);
     setTransactions(transRes.data);
+    setCategories(catRes.data);
   };
 
   useEffect(() => { fetchData(); }, []);
@@ -67,7 +70,12 @@ const Budgets = () => {
           <div className="glass" style={{ padding: '30px', width: '400px' }}>
             <h2>New Budget</h2>
             <form onSubmit={handleSubmit}>
-              <input type="text" placeholder="Category" className="form-control" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required />
+              <select className="form-control" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required>
+                <option value="">Select Category</option>
+                {categories.filter(c => c.type === 'Expense').map(c => (
+                  <option key={c._id} value={c.name}>{c.name}</option>
+                ))}
+              </select>
               <input type="number" placeholder="Budget Amount" className="form-control" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} required />
               <button type="submit" className="btn btn-primary" style={{width:'100%', marginTop:'20px'}}>Create Budget</button>
             </form>
