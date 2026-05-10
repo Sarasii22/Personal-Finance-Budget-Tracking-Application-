@@ -1,0 +1,118 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const Transactions = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [form, setForm] = useState({ title: '', amount: '', category: '', type: 'Expense', date: '', note: '' });
+  const [editingId, setEditingId] = useState(null);
+  const [filters, setFilters] = useState({ type: '', category: '', startDate: '', endDate: '' });
+  const [showModal, setShowModal] = useState(false);
+
+  const token = localStorage.getItem('token');
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+
+  const fetchTransactions = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/transactions', { ...config, params: filters });
+      setTransactions(res.data);
+    } catch (err) { console.error(err); }
+  };
+
+  useEffect(() => { fetchTransactions(); }, [filters]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingId) {
+        await axios.put(`http://localhost:5000/api/transactions/${editingId}`, form, config);
+      } else {
+        await axios.post('http://localhost:5000/api/transactions', form, config);
+      }
+      fetchTransactions();
+      setShowModal(false);
+      setForm({ title: '', amount: '', category: '', type: 'Expense', date: '', note: '' });
+      setEditingId(null);
+    } catch (err) { console.error(err); }
+  };
+
+  const editTransaction = (t) => {
+    setForm(t);
+    setEditingId(t._id);
+    setShowModal(true);
+  };
+
+  const deleteTransaction = async (id) => {
+    if (window.confirm('Delete this transaction?')) {
+      await axios.delete(`http://localhost:5000/api/transactions/${id}`, config);
+      fetchTransactions();
+    }
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
+        <h1>Transactions</h1>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ New Transaction</button>
+      </div>
+
+      {/* Filters */}
+      <div className="glass" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+        <select className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
+          <option value="">All Types</option>
+          <option value="Income">Income</option>
+          <option value="Expense">Expense</option>
+        </select>
+        <input type="date" className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
+        <input type="date" className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
+      </div>
+
+      {/* Transaction List */}
+      <div className="glass" style={{ padding: '20px' }}>
+        {transactions.map(t => (
+          <div key={t._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 0', borderBottom: '1px solid #333' }}>
+            <div>
+              <strong>{t.title}</strong> <span style={{color:'#888'}}>({t.category})</span><br />
+              <small>{new Date(t.date).toLocaleDateString()}</small>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ color: t.type === 'Income' ? '#22c55e' : '#ef4444', fontSize: '18px', fontWeight: 'bold' }}>
+                {t.type === 'Income' ? '+' : '-'}${t.amount}
+              </span>
+              <div style={{ marginTop: '8px' }}>
+                <button onClick={() => editTransaction(t)} style={{ marginRight: '10px' }}>Edit</button>
+                <button onClick={() => deleteTransaction(t._id)} className="btn btn-danger" style={{ padding: '5px 12px' }}>Delete</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="modal">
+          <div className="glass" style={{ padding: '30px', width: '420px' }}>
+            <h2>{editingId ? 'Edit Transaction' : 'New Transaction'}</h2>
+            <form onSubmit={handleSubmit}>
+              <input type="text" placeholder="Title" className="form-control" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required />
+              <input type="number" placeholder="Amount" className="form-control" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} required />
+              <select className="form-control" value={form.type} onChange={e => setForm({...form, type: e.target.value})}>
+                <option value="Expense">Expense</option>
+                <option value="Income">Income</option>
+              </select>
+              <input type="text" placeholder="Category" className="form-control" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required />
+              <input type="date" className="form-control" value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
+              <textarea placeholder="Note" className="form-control" value={form.note} onChange={e => setForm({...form, note: e.target.value})}></textarea>
+              
+              <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+                <button type="submit" className="btn btn-primary">Save</button>
+                <button type="button" className="btn btn-danger" onClick={() => {setShowModal(false); setEditingId(null);}}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Transactions;
