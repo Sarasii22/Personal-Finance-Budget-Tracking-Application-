@@ -8,8 +8,10 @@ const AppButton = ({ type = 'button', className = '', style, onClick, children, 
 
 const AddButton = ({ className = 'btn btn-primary', ...props }) => <AppButton className={className} {...props} />;
 
-const EditButton = ({ className = 'btn budget-edit-btn', ...props }) => <AppButton className={className} {...props} />;
+const EditButton = ({ className = 'btn btn-edit', ...props }) => <AppButton className={className} {...props} />;
 
 const DeleteButton = ({ className = 'btn btn-danger', ...props }) => <AppButton className={className} {...props} />;
 
-export { AppButton, AddButton, EditButton, DeleteButton };
+const ViewExpensesButton = ({ className = 'btn btn-primary', ...props }) => <AppButton className={className} {...props} />;
+
+export { AppButton, AddButton, EditButton, DeleteButton, ViewExpensesButton };

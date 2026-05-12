@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { AddButton, DeleteButton, EditButton, AppButton } from '../components/Buttons';
+import { AddButton, DeleteButton, EditButton, ViewExpensesButton, AppButton } from '../components/Buttons';
 import TopConfirmPopup from '../components/TopConfirmPopup';
 import BudgetExpensesPopup from '../components/BudgetExpensesPopup';
 
@@ -153,9 +153,9 @@ const Budgets = () => {
                 </div>
               ) : (
                 <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'nowrap', alignItems: 'center' }}>
-                  <EditButton className="btn budget-action-btn" onClick={() => openConfirm('Edit Budget', 'Do you want to edit this budget?', () => startEditBudget(b))}>Edit</EditButton>
-                  <AppButton className="btn budget-action-btn budget-view-btn" onClick={() => setViewBudget(b)}>View Expenses</AppButton>
-                  <AppButton className="btn budget-action-btn budget-delete-btn" onClick={() => openConfirm('Delete Budget', 'Do you want to delete this budget?', () => deleteBudget(b._id))}>Delete</AppButton>
+                  <EditButton onClick={() => openConfirm('Edit Budget', 'Do you want to edit this budget?', () => startEditBudget(b))}>Edit</EditButton>
+                  <ViewExpensesButton onClick={() => setViewBudget(b)}>View Expenses</ViewExpensesButton>
+                  <DeleteButton onClick={() => openConfirm('Delete Budget', 'Do you want to delete this budget?', () => deleteBudget(b._id))}>Delete</DeleteButton>
                 </div>
               )}
             </div>

@@ -1,0 +1,16 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+}
+
+/* Smooth interaction transitions for click/hover states */
+button,
+a,
+input,
+select,
+textarea {
+  transition: transform 0.18s ease, box-shadow 0.25s ease, background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, opacity 0.2s ease;
+}

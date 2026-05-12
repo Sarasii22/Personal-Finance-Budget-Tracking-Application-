@@ -1,0 +1,28 @@
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s ease, box-shadow 0.25s ease, background-color 0.25s ease, color 0.25s ease, opacity 0.2s ease;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.25s ease, background-color 0.25s ease, color 0.25s ease, opacity 0.2s ease;
+}
+
+.btn-primary { background: #22c55e; color: #000; }
+.btn-primary:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(34, 197, 94, 0.28); }
+
+.btn-danger { background: #ef4444; color: white; }
+.btn-danger:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28); }
+
+.btn:active,
+.nav-link:active,
+button:active,
+a:active {
+  transform: translateY(0) scale(0.98);
+}

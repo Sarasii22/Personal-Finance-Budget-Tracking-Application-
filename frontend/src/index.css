@@ -40,43 +40,12 @@ textarea {
 
 .btn-primary { background: #22c55e; color: #000; }
 .btn-primary:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(34, 197, 94, 0.28); }
+
+.btn-edit { background: #3b82f6; color: #fff; }
+.btn-edit:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(59, 130, 246, 0.28); }
+
 .btn-danger { background: #ef4444; color: white; }
 .btn-danger:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28); }
-
-.budget-action-btn {
-  min-width: 112px;
-  justify-content: center;
-}
-
-.budget-edit-btn {
-  background: #3b82f6;
-  color: #fff;
-}
-
-.budget-edit-btn:hover {
-  background: #2563eb;
-  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.28);
-}
-
-.budget-view-btn {
-  background: #22c55e;
-  color: #000;
-}
-
-.budget-view-btn:hover {
-  background: #16a34a;
-  box-shadow: 0 8px 18px rgba(34, 197, 94, 0.28);
-}
-
-.budget-delete-btn {
-  background: #ef4444;
-  color: #fff;
-}
-
-.budget-delete-btn:hover {
-  background: #dc2626;
-  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28);
-}
 
 .btn:active,
 .nav-link:active,
@@ -153,30 +122,30 @@ a:active {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
   z-index: 1200;
 }
 
 .confirm-popup-top {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  transform: none;
   width: min(560px, calc(100% - 24px));
   padding: 22px;
   border-radius: 16px;
-  animation: slideDownFade 0.25s ease;
+  animation: popupZoomIn 0.22s ease;
 }
 
 .budget-expenses-popup {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  transform: none;
   width: min(760px, calc(100% - 24px));
   max-height: calc(100vh - 40px);
   padding: 24px;
   border-radius: 16px;
-  animation: slideDownFade 0.25s ease;
+  animation: popupZoomIn 0.22s ease;
 }
 
 .confirm-popup-top h3 {
@@ -193,13 +162,19 @@ a:active {
   gap: 10px;
 }
 
-@keyframes slideDownFade {
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@keyframes popupZoomIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -16px);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: scale(1);
   }
 }

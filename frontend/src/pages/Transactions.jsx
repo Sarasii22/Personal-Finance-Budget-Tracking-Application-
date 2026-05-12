@@ -15,6 +15,10 @@ const Transactions = () => {
   const token = localStorage.getItem('token');
   const config = { headers: { Authorization: `Bearer ${token}` } };
 
+  const openDatePicker = (event) => {
+    event.currentTarget.showPicker?.();
+  };
+
   const fetchTransactions = async () => {
     try {
       const res = await axios.get('http://localhost:5000/api/transactions', { ...config, params: filters });
@@ -101,8 +105,8 @@ const Transactions = () => {
             <option key={c._id} value={c.name}>{c.name}</option>
           ))}
         </select>
-        <input type="date" className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
-        <input type="date" className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
+        <input type="date" className="form-control" style={{ width: '180px', cursor: 'pointer' }} onClick={openDatePicker} onFocus={openDatePicker} onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
+        <input type="date" className="form-control" style={{ width: '180px', cursor: 'pointer' }} onClick={openDatePicker} onFocus={openDatePicker} onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
       </div>
 
       {/* Transaction List */}
@@ -152,7 +156,7 @@ const Transactions = () => {
                   <option key={c._id} value={c.name}>{c.name}</option>
                 ))}
               </select>
-              <input type="date" className="form-control" value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
+              <input type="date" className="form-control" style={{ cursor: 'pointer' }} value={form.date} onClick={openDatePicker} onFocus={openDatePicker} onChange={e => setForm({...form, date: e.target.value})} />
               <textarea placeholder="Note" className="form-control" value={form.note} onChange={e => setForm({...form, note: e.target.value})}></textarea>
               
               <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>

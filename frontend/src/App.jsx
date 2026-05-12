@@ -7,6 +7,7 @@ import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Categories from './pages/Categories';
 import Sidebar from './components/Sidebar';
+import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
