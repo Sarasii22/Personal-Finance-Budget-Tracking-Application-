@@ -150,7 +150,9 @@ const Dashboard = () => {
     ? monthlyExpenses.reduce((sum, value) => sum + value, 0) / monthlyExpenses.length
     : 0;
 
-  const watchlistBudgets = budgetInsights.filter((budget) => budget.utilization >= 80).slice(0, 3);
+  const nearBudgets = budgetInsights.filter((budget) => budget.utilization >= 80 && budget.utilization < 100);
+  const passedBudgets = budgetInsights.filter((budget) => budget.utilization >= 100);
+  const watchlistBudgets = nearBudgets.slice(0, 3);
 
   const pieData = {
     labels: Object.keys(expenseByCategory),
@@ -252,8 +254,8 @@ const Dashboard = () => {
           </div>
           <div style={{ padding: '18px', background: '#071029', borderRadius: '12px' }}>
             <p style={{ margin: 0, color: '#94a3b8', fontSize: '13px' }}>Budgets to Watch</p>
-            <h3 style={{ margin: '10px 0 0', color: watchlistBudgets.length > 0 ? '#f59e0b' : '#22c55e' }}>
-              {watchlistBudgets.length} near limit
+            <h3 style={{ margin: '10px 0 0', color: (passedBudgets.length > 0 ? '#ef4444' : (nearBudgets.length > 0 ? '#f59e0b' : '#22c55e')) }}>
+              {nearBudgets.length} near • {passedBudgets.length} passed
             </h3>
           </div>
         </div>

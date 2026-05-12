@@ -172,7 +172,7 @@ const Budgets = () => {
         {budgets.map(b => {
           const budgetExpenses = getBudgetExpenses(b);
           const spent = budgetExpenses.reduce((sum, t) => sum + Number(t.amount), 0);
-          const percentage = Math.min((spent / b.amount) * 100, 100);
+          const percentage = b.amount ? (spent / Number(b.amount)) * 100 : 0;
           const budgetPeriodRange = getBudgetPeriodRange(b);
 
           return (
@@ -184,7 +184,14 @@ const Budgets = () => {
                 From {formatDate(budgetPeriodRange.startDate)} to {formatDate(budgetPeriodRange.endDate)}
               </p>
               <div style={{ height: '10px', background: '#333', borderRadius: '10px', margin: '15px 0' }}>
-                <div style={{ width: `${percentage}%`, height: '100%', background: percentage > 90 ? '#ef4444' : '#22c55e', borderRadius: '10px' }}></div>
+                <div
+                  style={{
+                    width: `${Math.min(percentage, 100)}%`,
+                    height: '100%',
+                    background: percentage > 100 ? '#991b1b' : (percentage > 90 ? '#ef4444' : '#22c55e'),
+                    borderRadius: '10px'
+                  }}
+                ></div>
               </div>
               <p>Spent: Rs. {spent} ({percentage.toFixed(1)}%)</p>
               {editingBudgetId === b._id ? (
