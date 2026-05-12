@@ -20,6 +20,9 @@
 .btn-danger { background: #ef4444; color: white; }
 .btn-danger:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28); }
 
+.btn-white { background: #ffffff; color: #000; }
+.btn-white:hover { background: #f3f4f6; transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+
 .btn:active,
 .nav-link:active,
 button:active,

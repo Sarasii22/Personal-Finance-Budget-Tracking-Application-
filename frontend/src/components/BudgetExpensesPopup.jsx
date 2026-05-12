@@ -55,7 +55,7 @@ const BudgetExpensesPopup = ({ open, budget, expenses, onClose }) => {
                   <strong>{expense.title}</strong>
                   <div style={{ color: '#888', fontSize: '13px' }}>{new Date(expense.date).toLocaleDateString()}</div>
                 </div>
-                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-${expense.amount}</span>
+                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-Rs. {expense.amount}</span>
               </div>
             ))
           )}

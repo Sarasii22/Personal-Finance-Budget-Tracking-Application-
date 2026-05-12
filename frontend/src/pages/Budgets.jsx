@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { AddButton, DeleteButton, EditButton, ViewExpensesButton, AppButton } from '../components/Buttons';
 import TopConfirmPopup from '../components/TopConfirmPopup';
 import BudgetExpensesPopup from '../components/BudgetExpensesPopup';
+import api from '../services/api';
 
 const Budgets = () => {
   const [budgets, setBudgets] = useState([]);
@@ -14,15 +14,13 @@ const Budgets = () => {
   const [editingAmount, setEditingAmount] = useState('');
   const [confirmState, setConfirmState] = useState({ open: false, title: '', message: '', onConfirm: null });
   const [viewBudget, setViewBudget] = useState(null);
-
-  const token = localStorage.getItem('token');
-  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const [formError, setFormError] = useState('');
 
   const fetchData = async () => {
     const [budgetRes, transRes, catRes] = await Promise.all([
-      axios.get('http://localhost:5000/api/budgets', config),
-      axios.get('http://localhost:5000/api/transactions', config),
-      axios.get('http://localhost:5000/api/categories', config)
+      api.get('/api/budgets'),
+      api.get('/api/transactions'),
+      api.get('/api/categories')
     ]);
     setBudgets(budgetRes.data);
     setTransactions(transRes.data);
@@ -31,16 +29,30 @@ const Budgets = () => {
 
   useEffect(() => { fetchData(); }, []);
 
+  // Calculate total income from all transactions
+  const totalIncome = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + Number(t.amount), 0);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post('http://localhost:5000/api/budgets', form, config);
+    setFormError('');
+
+    const newAmount = Number(form.amount) || 0;
+    const budgetWithoutCurrentCategory = budgets.filter(b => b.category !== form.category);
+    const newTotalBudget = budgetWithoutCurrentCategory.reduce((sum, b) => sum + Number(b.amount), 0) + newAmount;
+
+    if (newTotalBudget > totalIncome) {
+      setFormError(`Total budget (Rs. ${newTotalBudget.toFixed(2)}) cannot exceed total income (Rs. ${totalIncome.toFixed(2)})`);
+      return;
+    }
+
+    await api.post('/api/budgets', form);
     fetchData();
     setShowModal(false);
     setForm({ category: '', amount: '', period: 'Monthly' });
   };
 
   const deleteBudget = async (id) => {
-    await axios.delete(`http://localhost:5000/api/budgets/${id}`, config);
+    await api.delete(`/api/budgets/${id}`);
     fetchData();
   };
 
@@ -64,7 +76,16 @@ const Budgets = () => {
   };
 
   const updateBudget = async (id, category) => {
-    await axios.put(`http://localhost:5000/api/budgets/${id}`, { category, amount: editingAmount }, config);
+    const newAmount = Number(editingAmount) || 0;
+    const budgetWithoutCurrent = budgets.filter(b => b._id !== id);
+    const newTotalBudget = budgetWithoutCurrent.reduce((sum, b) => sum + Number(b.amount), 0) + newAmount;
+
+    if (newTotalBudget > totalIncome) {
+      openConfirm('Budget Exceeds Income', `Total budget (Rs. ${newTotalBudget.toFixed(2)}) cannot exceed total income (Rs. ${totalIncome.toFixed(2)})`, null);
+      return;
+    }
+
+    await api.put(`/api/budgets/${id}`, { category, amount: editingAmount });
     setEditingBudgetId(null);
     setEditingAmount('');
     fetchData();
@@ -113,6 +134,12 @@ const Budgets = () => {
     });
   };
 
+  // Total budget and distribution across all expense categories (include categories without budgets)
+  const categoryBudgetMap = {};
+  budgets.forEach(b => { categoryBudgetMap[b.category] = Number(b.amount) || 0; });
+  const expenseCategories = categories.filter(c => c.type === 'Expense');
+  const totalBudget = expenseCategories.reduce((sum, c) => sum + (categoryBudgetMap[c.name] || 0), 0);
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
@@ -121,16 +148,37 @@ const Budgets = () => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+        <div className="glass" style={{ padding: '20px', gridColumn: '1 / -1' }}>
+          <h3 style={{ marginTop: 0 }}>Total Budget: Rs. {totalBudget.toFixed(2)}</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+            {expenseCategories.map(cat => {
+              const amt = categoryBudgetMap[cat.name] || 0;
+              const pct = totalBudget > 0 ? (amt / totalBudget) * 100 : 0;
+              return (
+                <div key={cat._id} style={{ padding: '10px', background: '#071029', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong>{cat.name}</strong>
+                    <span>Rs. {amt.toFixed(2)}</span>
+                  </div>
+                  <div style={{ height: '8px', background: '#222', borderRadius: '6px', marginTop: '8px' }}>
+                    <div style={{ width: `${Math.min(pct, 100)}%`, height: '100%', background: '#22c55e', borderRadius: '6px' }} />
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#aaa', marginTop: '6px' }}>{pct.toFixed(1)}% of total</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
         {budgets.map(b => {
           const budgetExpenses = getBudgetExpenses(b);
-          const spent = budgetExpenses.reduce((sum, t) => sum + t.amount, 0);
+          const spent = budgetExpenses.reduce((sum, t) => sum + Number(t.amount), 0);
           const percentage = Math.min((spent / b.amount) * 100, 100);
           const budgetPeriodRange = getBudgetPeriodRange(b);
 
           return (
             <div key={b._id} className="glass" style={{ padding: '25px' }}>
               <h3>{b.category}</h3>
-              <h2>${b.amount}</h2>
+              <h2>Rs. {b.amount}</h2>
               <p style={{ color: '#aaa', marginBottom: '6px' }}>Period: {b.period}</p>
               <p style={{ color: '#888', marginBottom: '10px', fontSize: '13px' }}>
                 From {formatDate(budgetPeriodRange.startDate)} to {formatDate(budgetPeriodRange.endDate)}
@@ -138,7 +186,7 @@ const Budgets = () => {
               <div style={{ height: '10px', background: '#333', borderRadius: '10px', margin: '15px 0' }}>
                 <div style={{ width: `${percentage}%`, height: '100%', background: percentage > 90 ? '#ef4444' : '#22c55e', borderRadius: '10px' }}></div>
               </div>
-              <p>Spent: ${spent} ({percentage.toFixed(1)}%)</p>
+              <p>Spent: Rs. {spent} ({percentage.toFixed(1)}%)</p>
               {editingBudgetId === b._id ? (
                 <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input
@@ -182,6 +230,8 @@ const Budgets = () => {
         <div className="modal">
           <div className="glass" style={{ padding: '30px', width: '400px' }}>
             <h2>New Budget</h2>
+            {formError && <div style={{ background: '#ef4444', color: '#fff', padding: '10px', borderRadius: '6px', marginBottom: '15px', fontSize: '13px' }}>{formError}</div>}
+            <p style={{ color: '#aaa', fontSize: '12px', marginBottom: '15px' }}>Total Income: <strong style={{ color: '#22c55e' }}>Rs. {totalIncome.toFixed(2)}</strong></p>
             <form onSubmit={handleSubmit}>
               <select className="form-control" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required>
                 <option value="">Select Category</option>
@@ -211,6 +261,7 @@ const Budgets = () => {
                   onClick={() => {
                     setShowModal(false);
                     setForm({ category: '', amount: '', period: 'Monthly' });
+                    setFormError('');
                   }}
                 >
                   Cancel

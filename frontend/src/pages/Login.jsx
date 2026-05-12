@@ -1,19 +1,20 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppButton } from '../components/Buttons';
+import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
-const Login = ({ setIsAuthenticated }) => {
+const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
-      localStorage.setItem('token', res.data.token);
-      setIsAuthenticated(true);
+      const res = await api.post('/api/auth/login', form);
+      login(res.data);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.msg || 'Login failed');
@@ -40,7 +41,7 @@ const Login = ({ setIsAuthenticated }) => {
         </form>
 
         <p style={{ textAlign: 'center' }}>
-          Don't have an account? <a href="/register" style={{ color: '#22c55e' }}>Register</a>
+          Don't have an account? <Link to="/register" style={{ color: '#22c55e' }}>Register</Link>
         </p>
       </div>
     </div>

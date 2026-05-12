@@ -14,4 +14,6 @@ const DeleteButton = ({ className = 'btn btn-danger', ...props }) => <AppButton 
 
 const ViewExpensesButton = ({ className = 'btn btn-primary', ...props }) => <AppButton className={className} {...props} />;
 
-export { AppButton, AddButton, EditButton, DeleteButton, ViewExpensesButton };
+const WhiteButton = ({ className = 'btn btn-white', ...props }) => <AppButton className={className} {...props} />;
+
+export { AppButton, AddButton, EditButton, DeleteButton, ViewExpensesButton, WhiteButton };

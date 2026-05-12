@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { AddButton, AppButton, DeleteButton, EditButton } from '../components/Buttons';
 import TopConfirmPopup from '../components/TopConfirmPopup';
+import api from '../services/api';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -12,23 +12,20 @@ const Transactions = () => {
   const [showModal, setShowModal] = useState(false);
   const [confirmState, setConfirmState] = useState({ open: false, title: '', message: '', onConfirm: null });
 
-  const token = localStorage.getItem('token');
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-
   const openDatePicker = (event) => {
     event.currentTarget.showPicker?.();
   };
 
   const fetchTransactions = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/transactions', { ...config, params: filters });
+      const res = await api.get('/api/transactions', { params: filters });
       setTransactions(res.data);
     } catch (err) { console.error(err); }
   };
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/categories', config);
+      const res = await api.get('/api/categories');
       setCategories(res.data);
     } catch (err) { console.error(err); }
   };
@@ -49,9 +46,9 @@ const Transactions = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/transactions/${editingId}`, form, config);
+        await api.put(`/api/transactions/${editingId}`, form);
       } else {
-        await axios.post('http://localhost:5000/api/transactions', form, config);
+        await api.post('/api/transactions', form);
       }
       fetchTransactions();
       setShowModal(false);
@@ -67,7 +64,7 @@ const Transactions = () => {
   };
 
   const deleteTransaction = async (id) => {
-    await axios.delete(`http://localhost:5000/api/transactions/${id}`, config);
+    await api.delete(`/api/transactions/${id}`);
     fetchTransactions();
   };
 
@@ -85,14 +82,30 @@ const Transactions = () => {
     if (action) action();
   };
 
+  const expenseCount = transactions.filter(t => t.type === 'Expense').length;
+  const incomeCount = transactions.filter(t => t.type === 'Income').length;
+  const totalExpenses = transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalIncomes = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + Number(t.amount), 0);
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-        <h1>Transactions</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>
+          <h1 style={{ marginBottom: '0' }}>Transactions</h1>
+          <p style={{ color: '#aaa', fontSize: '13px', marginTop: '6px' }}>
+            Incomes: <strong style={{ color: '#22c55e' }}>{incomeCount} (Rs. {totalIncomes.toFixed(2)})</strong> | 
+            Expenses: <strong style={{ color: '#ef4444' }}>{expenseCount} (Rs. {totalExpenses.toFixed(2)})</strong>
+          </p>
+        </div>
         <AddButton className="btn btn-primary" onClick={() => setShowModal(true)}>+ New Transaction</AddButton>
       </div>
 
-      {/* Filters */}
+      {/* Quick Filters */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <button onClick={() => setFilters({ ...filters, type: '' })} style={{ padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: filters.type === '' ? '#22c55e' : '#333', color: filters.type === '' ? '#000' : '#fff', fontWeight: '500' }}>All</button>
+        <button onClick={() => setFilters({ ...filters, type: 'Income' })} style={{ padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: filters.type === 'Income' ? '#22c55e' : '#333', color: filters.type === 'Income' ? '#000' : '#fff', fontWeight: '500' }}>Incomes</button>
+        <button onClick={() => setFilters({ ...filters, type: 'Expense' })} style={{ padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: filters.type === 'Expense' ? '#22c55e' : '#333', color: filters.type === 'Expense' ? '#000' : '#fff', fontWeight: '500' }}>Expenses</button>
+      </div>
       <div className="glass" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
         <select className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
           <option value="">All Types</option>
@@ -119,7 +132,7 @@ const Transactions = () => {
             </div>
             <div style={{ textAlign: 'right' }}>
               <span style={{ color: t.type === 'Income' ? '#22c55e' : '#ef4444', fontSize: '18px', fontWeight: 'bold' }}>
-                {t.type === 'Income' ? '+' : '-'}${t.amount}
+                {t.type === 'Income' ? '+' : '-'}Rs. {t.amount}
               </span>
               <div style={{ marginTop: '8px' }}>
                 <EditButton onClick={() => openConfirm('Edit Transaction', 'Do you want to edit this transaction?', () => editTransaction(t))} style={{ marginRight: '10px', padding: '5px 12px' }}>Edit</EditButton>

@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -7,25 +6,31 @@ import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Categories from './pages/Categories';
 import Sidebar from './components/Sidebar';
+import ProtectedRoute from './components/ProtectedRoute';
+import { useAuth } from './context/AuthContext';
 import './App.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const { isAuthenticated } = useAuth();
 
   return (
     <Router>
       <div style={{ display: 'flex' }}>
-        {isAuthenticated && <Sidebar setIsAuthenticated={setIsAuthenticated} />}
+        {isAuthenticated && <Sidebar />}
         
         <div className={isAuthenticated ? "main-content" : ""} style={{ flex: 1 }}>
           <Routes>
-            <Route path="/login" element={!isAuthenticated ? <Login setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />} />
-            <Route path="/register" element={!isAuthenticated ? <Register setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />} />
-            
-            <Route path="/" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
-            <Route path="/transactions" element={isAuthenticated ? <Transactions /> : <Navigate to="/login" />} />
-            <Route path="/budgets" element={isAuthenticated ? <Budgets /> : <Navigate to="/login" />} />
-            <Route path="/categories" element={isAuthenticated ? <Categories /> : <Navigate to="/login" />} />
+            <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
+            <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />} />
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/transactions" element={<Transactions />} />
+              <Route path="/budgets" element={<Budgets />} />
+              <Route path="/categories" element={<Categories />} />
+            </Route>
+
+            <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
           </Routes>
         </div>
       </div>

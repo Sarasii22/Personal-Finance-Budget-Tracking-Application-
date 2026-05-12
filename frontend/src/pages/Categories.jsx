@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { AddButton, DeleteButton, EditButton, AppButton } from '../components/Buttons';
 import TopConfirmPopup from '../components/TopConfirmPopup';
+import api from '../services/api';
+
+const defaultExpenseCategories = ['Food', 'Transport', 'Entertainment', 'Utilities', 'Healthcare', 'Shopping', 'Education', 'Travel', 'Rent', 'Insurance'];
+const defaultIncomeCategories = ['Salary', 'Freelance', 'Investment', 'Bonus', 'Gift', 'Business'];
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -10,12 +13,10 @@ const Categories = () => {
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const [editingForm, setEditingForm] = useState({ name: '', type: 'Expense' });
   const [confirmState, setConfirmState] = useState({ open: false, title: '', message: '', onConfirm: null });
-
-  const token = localStorage.getItem('token');
-  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const [filterType, setFilterType] = useState('All');
 
   const fetchCategories = async () => {
-    const res = await axios.get('http://localhost:5000/api/categories', config);
+    const res = await api.get('/api/categories');
     setCategories(res.data);
   };
 
@@ -23,14 +24,14 @@ const Categories = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post('http://localhost:5000/api/categories', form, config);
+    await api.post('/api/categories', form);
     fetchCategories();
     setShowModal(false);
     setForm({ name: '', type: 'Expense' });
   };
 
   const deleteCategory = async (id) => {
-    await axios.delete(`http://localhost:5000/api/categories/${id}`, config);
+    await api.delete(`/api/categories/${id}`);
     fetchCategories();
   };
 
@@ -56,7 +57,7 @@ const Categories = () => {
   const updateCategory = async (id) => {
     try {
       if (!editingForm.name.trim()) return;
-      await axios.put(`http://localhost:5000/api/categories/${id}`, editingForm, config);
+      await api.put(`/api/categories/${id}`, editingForm);
       setEditingCategoryId(null);
       setEditingForm({ name: '', type: 'Expense' });
       await fetchCategories();
@@ -65,15 +66,53 @@ const Categories = () => {
     }
   };
 
+  const addDefaultCategory = async (name, type) => {
+    await api.post('/api/categories', { name, type });
+    fetchCategories();
+  };
+
+  const expenseCount = categories.filter(c => c.type === 'Expense').length;
+  const incomeCount = categories.filter(c => c.type === 'Income').length;
+  const filteredCategories = filterType === 'All' ? categories : categories.filter(c => c.type === filterType);
+  const categoryNames = new Set(categories.map(c => c.name));
+  const availableExpenses = defaultExpenseCategories.filter(c => !categoryNames.has(c));
+  const availableIncomes = defaultIncomeCategories.filter(c => !categoryNames.has(c));
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-        <h1>Categories</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>
+          <h1 style={{ marginBottom: '0' }}>Categories</h1>
+          <p style={{ color: '#aaa', fontSize: '13px', marginTop: '6px' }}>Expenses: <strong style={{ color: '#ef4444' }}>{expenseCount}</strong> | Incomes: <strong style={{ color: '#22c55e' }}>{incomeCount}</strong></p>
+        </div>
         <AddButton className="btn btn-primary" onClick={() => setShowModal(true)}>+ Add Category</AddButton>
       </div>
 
-      <div className="glass" style={{ padding: '25px' }}>
-        {categories.map(c => (
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        {['All', 'Expense', 'Income'].map(type => (
+          <button
+            key={type}
+            onClick={() => setFilterType(type)}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              background: filterType === type ? '#22c55e' : '#333',
+              color: filterType === type ? '#000' : '#fff',
+              fontWeight: '500',
+              transition: 'all 0.2s'
+            }}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
+
+      {filteredCategories.length > 0 && (
+      <div className="glass" style={{ padding: '25px', marginBottom: '20px' }}>
+        <h3 style={{ marginTop: 0, marginBottom: '15px' }}>Your Categories</h3>
+        {filteredCategories.map(c => (
           <div key={c._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '15px', borderBottom: '1px solid #333' }}>
             {editingCategoryId === c._id ? (
               <>
@@ -115,6 +154,39 @@ const Categories = () => {
           </div>
         ))}
       </div>
+      )}
+
+      {(filterType === 'Expense' || filterType === 'All') && availableExpenses.length > 0 && (
+        <div className="glass" style={{ padding: '25px', marginBottom: '20px' }}>
+          <h3 style={{ marginTop: 0, marginBottom: '15px' }}>Available Expense Categories</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+            {availableExpenses.map(name => (
+              <div key={name} style={{ padding: '12px', background: '#071029', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong>{name}</strong> <span style={{ color: '#888' }}>(Expense)</span>
+                </div>
+                <AddButton onClick={() => addDefaultCategory(name, 'Expense')} className="btn btn-primary" style={{ padding: '6px 12px' }}>Add</AddButton>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(filterType === 'Income' || filterType === 'All') && availableIncomes.length > 0 && (
+        <div className="glass" style={{ padding: '25px' }}>
+          <h3 style={{ marginTop: 0, marginBottom: '15px' }}>Available Income Categories</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+            {availableIncomes.map(name => (
+              <div key={name} style={{ padding: '12px', background: '#071029', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong>{name}</strong> <span style={{ color: '#888' }}>(Income)</span>
+                </div>
+                <AddButton onClick={() => addDefaultCategory(name, 'Income')} className="btn btn-primary" style={{ padding: '6px 12px' }}>Add</AddButton>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <TopConfirmPopup
         open={confirmState.open}

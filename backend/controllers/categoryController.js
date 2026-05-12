@@ -1,4 +1,5 @@
 const Category = require('../models/Category');
+const Budget = require('../models/Budget');
 
 exports.addCategory = async (req, res) => {
   try {
@@ -34,8 +35,15 @@ exports.updateCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
   try {
+    const category = await Category.findOne({ _id: req.params.id, user: req.user.id });
+    if (!category) return res.status(404).json({ msg: 'Category not found' });
+    
+    // Delete associated budgets
+    await Budget.deleteMany({ user: req.user.id, category: category.name });
+    
+    // Delete the category
     await Category.findOneAndDelete({ _id: req.params.id, user: req.user.id });
-    res.json({ msg: 'Category deleted' });
+    res.json({ msg: 'Category and associated budgets deleted' });
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
   }
