@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AppButton } from '../components/Buttons';
 
 const Register = ({ setIsAuthenticated }) => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -36,9 +37,9 @@ const Register = ({ setIsAuthenticated }) => {
           <input type="password" placeholder="Password" className="form-control" style={{ marginBottom: '20px' }}
             value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '15px' }}>
+          <AppButton type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '15px' }}>
             Register
-          </button>
+          </AppButton>
         </form>
 
         <p style={{ textAlign: 'center' }}>

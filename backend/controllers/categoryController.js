@@ -18,6 +18,20 @@ exports.getCategories = async (req, res) => {
   }
 };
 
+exports.updateCategory = async (req, res) => {
+  try {
+    const category = await Category.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id },
+      req.body,
+      { new: true }
+    );
+    if (!category) return res.status(404).json({ msg: 'Category not found' });
+    res.json(category);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
 exports.deleteCategory = async (req, res) => {
   try {
     await Category.findOneAndDelete({ _id: req.params.id, user: req.user.id });

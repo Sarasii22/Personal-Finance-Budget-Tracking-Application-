@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { AddButton, AppButton, DeleteButton, EditButton } from '../components/Buttons';
+import TopConfirmPopup from '../components/TopConfirmPopup';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -8,6 +10,7 @@ const Transactions = () => {
   const [editingId, setEditingId] = useState(null);
   const [filters, setFilters] = useState({ type: '', category: '', startDate: '', endDate: '' });
   const [showModal, setShowModal] = useState(false);
+  const [confirmState, setConfirmState] = useState({ open: false, title: '', message: '', onConfirm: null });
 
   const token = localStorage.getItem('token');
   const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -60,17 +63,29 @@ const Transactions = () => {
   };
 
   const deleteTransaction = async (id) => {
-    if (window.confirm('Delete this transaction?')) {
-      await axios.delete(`http://localhost:5000/api/transactions/${id}`, config);
-      fetchTransactions();
-    }
+    await axios.delete(`http://localhost:5000/api/transactions/${id}`, config);
+    fetchTransactions();
+  };
+
+  const openConfirm = (title, message, onConfirm) => {
+    setConfirmState({ open: true, title, message, onConfirm });
+  };
+
+  const closeConfirm = () => {
+    setConfirmState({ open: false, title: '', message: '', onConfirm: null });
+  };
+
+  const handleConfirm = () => {
+    const action = confirmState.onConfirm;
+    closeConfirm();
+    if (action) action();
   };
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
         <h1>Transactions</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ New Transaction</button>
+        <AddButton className="btn btn-primary" onClick={() => setShowModal(true)}>+ New Transaction</AddButton>
       </div>
 
       {/* Filters */}
@@ -103,13 +118,21 @@ const Transactions = () => {
                 {t.type === 'Income' ? '+' : '-'}${t.amount}
               </span>
               <div style={{ marginTop: '8px' }}>
-                <button onClick={() => editTransaction(t)} style={{ marginRight: '10px' }}>Edit</button>
-                <button onClick={() => deleteTransaction(t._id)} className="btn btn-danger" style={{ padding: '5px 12px' }}>Delete</button>
+                <EditButton onClick={() => openConfirm('Edit Transaction', 'Do you want to edit this transaction?', () => editTransaction(t))} style={{ marginRight: '10px', padding: '5px 12px' }}>Edit</EditButton>
+                <DeleteButton onClick={() => openConfirm('Delete Transaction', 'Do you want to delete this transaction?', () => deleteTransaction(t._id))} className="btn btn-danger" style={{ padding: '5px 12px' }}>Delete</DeleteButton>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      <TopConfirmPopup
+        open={confirmState.open}
+        title={confirmState.title}
+        message={confirmState.message}
+        onConfirm={handleConfirm}
+        onCancel={closeConfirm}
+      />
 
       {/* Modal */}
       {showModal && (
@@ -133,8 +156,8 @@ const Transactions = () => {
               <textarea placeholder="Note" className="form-control" value={form.note} onChange={e => setForm({...form, note: e.target.value})}></textarea>
               
               <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-                <button type="submit" className="btn btn-primary">Save</button>
-                <button type="button" className="btn btn-danger" onClick={() => {setShowModal(false); setEditingId(null);}}>Cancel</button>
+                <AppButton type="submit" className="btn btn-primary">Save</AppButton>
+                <AppButton type="button" className="btn btn-danger" onClick={() => {setShowModal(false); setEditingId(null);}}>Cancel</AppButton>
               </div>
             </form>
           </div>

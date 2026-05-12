@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AppButton } from './Buttons';
 
 const Sidebar = ({ setIsAuthenticated }) => {
   const location = useLocation();
@@ -25,7 +26,7 @@ const Sidebar = ({ setIsAuthenticated }) => {
       </nav>
 
       <div style={{ position: 'absolute', bottom: '40px', width: '85%', padding: '0 20px' }}>
-        <button onClick={logout} className="btn btn-danger" style={{ width: '100%' }}>Logout</button>
+        <AppButton onClick={logout} className="btn btn-danger" style={{ width: '100%' }}>Logout</AppButton>
       </div>
     </div>
   );
