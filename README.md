@@ -83,7 +83,7 @@ PORT=5000  # optional
 
 ```bash
 cd backend
-npm run dev
+node server.js
 ```
 
 3. Or start in production mode:
