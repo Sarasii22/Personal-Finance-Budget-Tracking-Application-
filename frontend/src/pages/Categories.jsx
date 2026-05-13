@@ -80,7 +80,7 @@ const Categories = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <h1 style={{ marginBottom: '0' }}>Categories</h1>
           <p style={{ color: '#aaa', fontSize: '13px', marginTop: '6px' }}>Expenses: <strong style={{ color: '#ef4444' }}>{expenseCount}</strong> | Incomes: <strong style={{ color: '#22c55e' }}>{incomeCount}</strong></p>
@@ -88,7 +88,7 @@ const Categories = () => {
         <AddButton className="btn btn-primary" onClick={() => setShowModal(true)}>+ Add Category</AddButton>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+      <div className="filter-bar" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         {['All', 'Expense', 'Income'].map(type => (
           <button
             key={type}
@@ -110,13 +110,13 @@ const Categories = () => {
       </div>
 
       {filteredCategories.length > 0 && (
-      <div className="glass" style={{ padding: '25px', marginBottom: '20px' }}>
+      <div className="glass category-list" style={{ padding: '25px', marginBottom: '20px' }}>
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>Your Categories</h3>
         {filteredCategories.map(c => (
-          <div key={c._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '15px', borderBottom: '1px solid #333' }}>
+          <div key={c._id} className="category-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '15px', borderBottom: '1px solid #333' }}>
             {editingCategoryId === c._id ? (
               <>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <div className="category-edit-fields" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                   <input
                     type="text"
                     className="form-control"
@@ -145,7 +145,7 @@ const Categories = () => {
                 <div>
                   <strong>{c.name}</strong> <span style={{color: '#888'}}>({c.type})</span>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="category-actions" style={{ display: 'flex', gap: '10px' }}>
                   <EditButton onClick={() => openConfirm('Edit Category', 'Do you want to edit this category?', () => startEditCategory(c))}>Edit</EditButton>
                   <DeleteButton onClick={() => openConfirm('Delete Category', 'Do you want to delete this category?', () => deleteCategory(c._id))} className="btn btn-danger">Delete</DeleteButton>
                 </div>
@@ -157,9 +157,9 @@ const Categories = () => {
       )}
 
       {(filterType === 'Expense' || filterType === 'All') && availableExpenses.length > 0 && (
-        <div className="glass" style={{ padding: '25px', marginBottom: '20px' }}>
+        <div className="glass category-palette" style={{ padding: '25px', marginBottom: '20px' }}>
           <h3 style={{ marginTop: 0, marginBottom: '15px' }}>Available Expense Categories</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+          <div className="category-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
             {availableExpenses.map(name => (
               <div key={name} style={{ padding: '12px', background: '#071029', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
@@ -173,9 +173,9 @@ const Categories = () => {
       )}
 
       {(filterType === 'Income' || filterType === 'All') && availableIncomes.length > 0 && (
-        <div className="glass" style={{ padding: '25px' }}>
+        <div className="glass category-palette" style={{ padding: '25px' }}>
           <h3 style={{ marginTop: 0, marginBottom: '15px' }}>Available Income Categories</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+          <div className="category-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
             {availableIncomes.map(name => (
               <div key={name} style={{ padding: '12px', background: '#071029', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
@@ -198,7 +198,7 @@ const Categories = () => {
 
       {showModal && (
         <div className="modal">
-          <div className="glass" style={{ padding: '30px', width: '400px' }}>
+          <div className="glass modal-card" style={{ padding: '30px', width: '400px' }}>
             <h2>Add New Category</h2>
             <form onSubmit={handleSubmit}>
               <input type="text" placeholder="Category Name" className="form-control" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />

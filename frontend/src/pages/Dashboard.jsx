@@ -204,14 +204,14 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
         <h1 style={{ marginBottom: '0', color: '#22c55e' }}>Dashboard</h1>
         <div>
           <WhiteButton onClick={() => setShowMore(true)} style={{ marginRight: '10px' }}>View More Charts</WhiteButton>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' }}>
         <div className="glass card-hover" style={{ padding: '25px' }}>
           <h3>Total Income</h3>
           <h2 style={{ color: '#22c55e' }}>Rs. {summary.totalIncome.toFixed(2)}</h2>
@@ -228,7 +228,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="glass" style={{ padding: '25px', marginBottom: '25px' }}>
+      <div className="glass insights-panel" style={{ padding: '25px', marginBottom: '25px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px', flexWrap: 'wrap' }}>
           <div>
             <h3 style={{ margin: 0 }}>Financial Insights</h3>
@@ -237,7 +237,7 @@ const Dashboard = () => {
           <Link to="/budgets" style={{ color: '#22c55e', fontWeight: 600 }}>Review budgets</Link>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <div className="insights-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
           <div style={{ padding: '18px', background: '#071029', borderRadius: '12px' }}>
             <p style={{ margin: 0, color: '#94a3b8', fontSize: '13px' }}>Savings Rate</p>
             <h3 style={{ margin: '10px 0 0', color: savingsRate >= 0 ? '#22c55e' : '#ef4444' }}>{savingsRate.toFixed(1)}%</h3>
@@ -277,7 +277,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px', marginBottom: '25px' }}>
+      <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px', marginBottom: '25px' }}>
         <div className="glass" style={{ padding: '25px', minHeight: '360px' }}>
           <h3 style={{ marginBottom: '16px' }}>Monthly Income vs Expenses</h3>
           <div style={{ height: '280px' }}>
@@ -302,7 +302,7 @@ const Dashboard = () => {
         <div className="glass" style={{ padding: '25px', minHeight: '360px' }}>
           <h3>Recent Transactions</h3>
           {recentTransactions.slice(0, 8).map((transaction) => (
-            <div key={transaction._id} style={{ padding: '12px 0', borderBottom: '1px solid #333', display: 'flex', justifyContent: 'space-between' }}>
+            <div key={transaction._id} className="transaction-row" style={{ padding: '12px 0', borderBottom: '1px solid #333', display: 'flex', justifyContent: 'space-between' }}>
               <div>
                 <strong>{transaction.title}</strong> <span style={{ color: '#888' }}>- {transaction.category}</span>
                 <div style={{ color: '#666', fontSize: '12px' }}>{new Date(transaction.date).toLocaleString()}</div>
@@ -319,8 +319,8 @@ const Dashboard = () => {
       </div>
 
       {showMore && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
-          <div style={{ width: '90%', maxWidth: '1100px', background: '#0b1220', padding: '20px', borderRadius: '8px' }}>
+        <div className="more-charts-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
+          <div className="more-charts-card" style={{ width: '90%', maxWidth: '1100px', background: '#0b1220', padding: '20px', borderRadius: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 style={{ margin: 0 }}>More Charts</h3>
               <div>

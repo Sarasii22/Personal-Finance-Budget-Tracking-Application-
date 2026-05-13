@@ -142,15 +142,15 @@ const Budgets = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
         <h1>Budgets</h1>
         <AddButton className="btn btn-primary" onClick={() => setShowModal(true)}>+ New Budget</AddButton>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+      <div className="budget-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
         <div className="glass" style={{ padding: '20px', gridColumn: '1 / -1' }}>
           <h3 style={{ marginTop: 0 }}>Total Budget: Rs. {totalBudget.toFixed(2)}</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+          <div className="budget-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
             {expenseCategories.map(cat => {
               const amt = categoryBudgetMap[cat.name] || 0;
               const pct = totalBudget > 0 ? (amt / totalBudget) * 100 : 0;
@@ -207,7 +207,7 @@ const Budgets = () => {
                   <AppButton className="btn btn-danger" onClick={() => { setEditingBudgetId(null); setEditingAmount(''); }}>Cancel</AppButton>
                 </div>
               ) : (
-                <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'nowrap', alignItems: 'center' }}>
+                <div className="budget-actions" style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'nowrap', alignItems: 'center' }}>
                   <EditButton onClick={() => openConfirm('Edit Budget', 'Do you want to edit this budget?', () => startEditBudget(b))}>Edit</EditButton>
                   <ViewExpensesButton onClick={() => setViewBudget(b)}>View Expenses</ViewExpensesButton>
                   <DeleteButton onClick={() => openConfirm('Delete Budget', 'Do you want to delete this budget?', () => deleteBudget(b._id))}>Delete</DeleteButton>
@@ -235,7 +235,7 @@ const Budgets = () => {
 
       {showModal && (
         <div className="modal">
-          <div className="glass" style={{ padding: '30px', width: '400px' }}>
+          <div className="glass modal-card" style={{ padding: '30px', width: '400px' }}>
             <h2>New Budget</h2>
             {formError && <div style={{ background: '#ef4444', color: '#fff', padding: '10px', borderRadius: '6px', marginBottom: '15px', fontSize: '13px' }}>{formError}</div>}
             <p style={{ color: '#aaa', fontSize: '12px', marginBottom: '15px' }}>Total Income: <strong style={{ color: '#22c55e' }}>Rs. {totalIncome.toFixed(2)}</strong></p>

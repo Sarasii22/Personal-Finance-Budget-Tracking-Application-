@@ -4,6 +4,7 @@ body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   background: #0a0a0a;
   color: #e0e0e0;
+  overflow-x: hidden;
 }
 
 /* Smooth interaction transitions for click/hover states */
@@ -66,6 +67,48 @@ a:active {
   width: 260px;
   position: fixed;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-toggle {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 40;
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(17, 17, 17, 0.96);
+  padding: 10px;
+  gap: 4px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 2px;
+  border-radius: 999px;
+  background: #e0e0e0;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 18;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .main-content {
@@ -160,6 +203,254 @@ a:active {
 .confirm-actions {
   display: flex;
   gap: 10px;
+}
+
+.auth-page {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a0a;
+  padding: 24px;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar-brand {
+  word-break: break-word;
+}
+
+.sidebar-logout {
+  margin-top: auto;
+  padding-bottom: 20px;
+}
+
+.auth-card {
+  width: min(380px, 100%);
+  max-width: 100%;
+}
+
+.modal-card {
+  max-width: calc(100vw - 24px);
+}
+
+.more-charts-card {
+  width: min(1100px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+  }
+
+  .main-content {
+    margin-left: 240px;
+    padding: 24px;
+  }
+
+  .charts-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: inline-flex;
+  }
+
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(280px, 86vw);
+    height: 100vh;
+    min-height: 0;
+    border-right: 1px solid #333;
+    border-bottom: none;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    z-index: 30;
+    overflow-y: auto;
+    background: #111;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar nav {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 0 12px 12px;
+  }
+
+  .nav-link {
+    margin: 0;
+    text-align: center;
+  }
+
+  .sidebar .sidebar-logout {
+    width: 100%;
+    padding: 12px 20px 20px;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 68px 18px 18px;
+  }
+
+  .page-header,
+  .transaction-row,
+  .category-row,
+  .confirm-actions,
+  .budget-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-header > div:last-child,
+  .page-header > button,
+  .page-header > div,
+  .confirm-actions > button,
+  .budget-actions > button,
+  .category-actions > button,
+  .transaction-row > div:last-child {
+    width: 100%;
+  }
+
+  .filter-bar {
+    flex-wrap: wrap;
+  }
+
+  .filter-bar button,
+  .filter-panel .form-control,
+  .transaction-row,
+  .category-row,
+  .budget-actions,
+  .category-actions,
+  .confirm-actions,
+  .more-charts-card,
+  .modal-card,
+  .auth-card {
+    width: 100%;
+  }
+
+  .budget-summary-grid,
+  .category-grid,
+  .stats-grid,
+  .insights-grid,
+  .charts-grid,
+  .charts-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .budget-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .budget-summary-grid,
+  .category-grid,
+  .insights-grid,
+  .stats-grid,
+  .charts-grid {
+    gap: 12px;
+  }
+
+  .transaction-row,
+  .category-row {
+    gap: 12px;
+  }
+
+  .transaction-row > div:last-child,
+  .category-row > div:last-child {
+    text-align: left;
+  }
+
+  .more-charts-card {
+    padding: 16px !important;
+  }
+
+  .auth-page {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: 28px !important;
+  }
+
+  .modal-card {
+    padding: 24px !important;
+  }
+
+  .confirm-popup-top,
+  .budget-expenses-popup {
+    width: calc(100% - 16px);
+    max-height: calc(100vh - 16px);
+  }
+
+  .charts-modal-grid {
+    gap: 12px;
+  }
+
+  .charts-modal-grid > div,
+  .charts-grid > div,
+  .stats-grid > div,
+  .insights-grid > div,
+  .budget-summary-grid > div,
+  .category-grid > div {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 68px 14px 14px;
+  }
+
+  .glass {
+    border-radius: 16px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .page-header > div,
+  .page-header > button {
+    width: 100%;
+  }
+
+  .page-header {
+    gap: 12px;
+  }
+
+  .transaction-row,
+  .category-row {
+    padding: 12px 0;
+  }
+
+  .budget-expenses-popup,
+  .confirm-popup-top,
+  .modal-card,
+  .auth-card,
+  .more-charts-card {
+    border-radius: 14px;
+  }
 }
 
 form {

@@ -89,7 +89,7 @@ const Transactions = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <h1 style={{ marginBottom: '0' }}>Transactions</h1>
           <p style={{ color: '#aaa', fontSize: '13px', marginTop: '6px' }}>
@@ -101,12 +101,12 @@ const Transactions = () => {
       </div>
 
       {/* Quick Filters */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+      <div className="filter-bar" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         <button onClick={() => setFilters({ ...filters, type: '' })} style={{ padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: filters.type === '' ? '#22c55e' : '#333', color: filters.type === '' ? '#000' : '#fff', fontWeight: '500' }}>All</button>
         <button onClick={() => setFilters({ ...filters, type: 'Income' })} style={{ padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: filters.type === 'Income' ? '#22c55e' : '#333', color: filters.type === 'Income' ? '#000' : '#fff', fontWeight: '500' }}>Incomes</button>
         <button onClick={() => setFilters({ ...filters, type: 'Expense' })} style={{ padding: '8px 16px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: filters.type === 'Expense' ? '#22c55e' : '#333', color: filters.type === 'Expense' ? '#000' : '#fff', fontWeight: '500' }}>Expenses</button>
       </div>
-      <div className="glass" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+      <div className="glass filter-panel" style={{ padding: '20px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
         <select className="form-control" style={{ width: '180px' }} onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
           <option value="">All Types</option>
           <option value="Income">Income</option>
@@ -123,9 +123,9 @@ const Transactions = () => {
       </div>
 
       {/* Transaction List */}
-      <div className="glass" style={{ padding: '20px' }}>
+      <div className="glass transaction-list" style={{ padding: '20px' }}>
         {transactions.map(t => (
-          <div key={t._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 0', borderBottom: '1px solid #333' }}>
+          <div key={t._id} className="transaction-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 0', borderBottom: '1px solid #333' }}>
             <div>
               <strong>{t.title}</strong> <span style={{color:'#888'}}>({t.category})</span><br />
               <small>{new Date(t.date).toLocaleDateString()}</small>
@@ -154,7 +154,7 @@ const Transactions = () => {
       {/* Modal */}
       {showModal && (
         <div className="modal">
-          <div className="glass" style={{ padding: '30px', width: '420px' }}>
+          <div className="glass modal-card" style={{ padding: '30px', width: '420px' }}>
             <h2>{editingId ? 'Edit Transaction' : 'New Transaction'}</h2>
             <form onSubmit={handleSubmit}>
               <input type="text" placeholder="Title" className="form-control" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required />

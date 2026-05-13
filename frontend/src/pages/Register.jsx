@@ -22,8 +22,8 @@ const Register = () => {
   };
 
   return (
-    <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a' }}>
-      <div className="glass" style={{ padding: '40px', width: '380px' }}>
+    <div className="auth-page">
+      <div className="glass auth-card" style={{ padding: '40px', width: '380px' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#22c55e' }}>Create Account</h2>
         
         {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}

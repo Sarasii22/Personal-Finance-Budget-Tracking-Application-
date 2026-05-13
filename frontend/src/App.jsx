@@ -8,15 +8,40 @@ import Categories from './pages/Categories';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
+import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
   const { isAuthenticated } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [isAuthenticated]);
 
   return (
     <Router>
-      <div style={{ display: 'flex' }}>
-        {isAuthenticated && <Sidebar />}
+      <div className="app-shell">
+        {isAuthenticated && (
+          <>
+            <button
+              type="button"
+              className="menu-toggle"
+              aria-label="Open menu"
+              aria-expanded={isMenuOpen}
+              onClick={() => setIsMenuOpen((open) => !open)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+            <div
+              className={`sidebar-overlay ${isMenuOpen ? 'show' : ''}`}
+              onClick={() => setIsMenuOpen(false)}
+            />
+            <Sidebar isOpen={isMenuOpen} onNavigate={() => setIsMenuOpen(false)} />
+          </>
+        )}
         
         <div className={isAuthenticated ? "main-content" : ""} style={{ flex: 1 }}>
           <Routes>

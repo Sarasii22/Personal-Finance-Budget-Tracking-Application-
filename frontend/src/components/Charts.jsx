@@ -3,7 +3,7 @@ import { Bar, Line, Pie } from 'react-chartjs-2';
 
 const Charts = ({ incomeTrendData, expenseTrendData, transactionCountData, pieData, barOptions }) => {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }}>
+    <div className="charts-modal-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }}>
       <div className="glass" style={{ padding: '16px', minHeight: '320px' }}>
         <h4>Income Trend (All Time)</h4>
         <div style={{ height: '220px' }}>
