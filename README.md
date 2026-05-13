@@ -1,113 +1,144 @@
 # Personal Finance Budget Tracking Application
 
-A full-stack application for tracking personal finances and budgets, built with React, Node.js, Express, MongoDB Atlas, and Chart.js.
+A full-stack application for tracking personal finances and budgets (frontend built with React + Vite; backend with Node.js + Express; MongoDB for data persistence).
 
 ## Tech Stack
 
-- **Frontend**: React with Vite, plain CSS
-- **Backend**: Node.js with Express
-- **Database**: MongoDB Atlas
-- **Charts**: Chart.js with react-chartjs-2
+- Frontend: React, Vite
+- Backend: Node.js, Express
+- Database: MongoDB (Atlas or local)
+- Charts: Chart.js, react-chartjs-2
 
-## Project Structure
+## Project Layout
 
 ```
-personal-finance-budget-tracking-application/
-├── frontend/          # React frontend
-├── backend/           # Node.js backend
-├── .gitignore         # Git ignore rules
-└── README.md          # This file
+frontend/   # React app (Vite)
+backend/    # Express API server
+README.md   # Project setup and run instructions
 ```
 
-## Setup Instructions
+## Prerequisites
 
-### Prerequisites
+- Node.js v16+ and npm (or yarn)
+- MongoDB Atlas account or a local MongoDB server / Docker
 
-- Node.js (v16 or higher)
-- npm or yarn
-- MongoDB Atlas account
+---
 
-### 1. Clone the Repository
+## Setup: Installing dependencies
+
+1. Clone the repo and open the project root:
 
 ```bash
 git clone <repository-url>
-cd personal-finance-budget-tracking-application
+cd Personal-Finance-Budget-Tracking-Application-
 ```
 
-### 2. Backend Setup
+2. Install backend dependencies:
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+```bash
+cd backend
+npm install
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+3. Install frontend dependencies (in a separate terminal):
 
-3. Set up environment variables:
-   - Copy `.env` file and update the MongoDB URI with your Atlas connection string
-   - Get your MongoDB Atlas connection string from the Atlas dashboard
+```bash
+cd ../frontend
+npm install
+```
 
-4. Start the backend server:
-   ```bash
-   npm run dev  # For development with nodemon
-   # or
-   npm start    # For production
-   ```
+---
 
-   The backend will run on `http://localhost:5000`
+## Running the frontend
 
-### 3. Frontend Setup
+From the `frontend` folder, start the dev server:
 
-1. Open a new terminal and navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+```bash
+cd frontend
+npm run dev
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+By default Vite serves the app at `http://localhost:5173`.
 
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+To create a production build:
 
-   The frontend will run on `http://localhost:5173`
+```bash
+npm run build
+npm run preview  # serve the production build locally
+```
 
-### 4. MongoDB Atlas Setup
+---
 
-1. Create a MongoDB Atlas account at [mongodb.com/atlas](https://www.mongodb.com/atlas)
-2. Create a new cluster (free tier available)
-3. Create a database user
-4. Whitelist your IP address (or 0.0.0.0/0 for all)
-5. Get the connection string and update it in `backend/.env`
+## Running the backend
 
-## Development
+1. Create a `.env` file in the `backend` folder with at minimum:
 
-- Frontend: `npm run dev` in `frontend/` directory
-- Backend: `npm run dev` in `backend/` directory
-- Build frontend: `npm run build` in `frontend/` directory
+```
+MONGO_URI=<your-mongodb-connection-string>
+JWT_SECRET=<a-strong-secret-for-jwt>
+PORT=5000  # optional
+```
 
-## Features
+2. Start the backend in development (uses `nodemon`):
 
-- Track income and expenses
-- Create and manage budgets
-- Visualize financial data with charts
-- User authentication (to be implemented)
-- Responsive design
+```bash
+cd backend
+npm run dev
+```
 
-## Contributing
+3. Or start in production mode:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+```bash
+npm start
+```
 
-## License
+The backend listens on `http://localhost:5000` by default and exposes the API under `/api` (e.g. `/api/auth`, `/api/transactions`).
 
-This project is licensed under the MIT License.
+---
+
+## Running the database
+
+Options:
+
+- MongoDB Atlas (recommended for quick cloud setup):
+  1. Create a free cluster at https://www.mongodb.com/atlas
+  2. Create a database user and allow your IP (or 0.0.0.0/0 while developing)
+  3. Copy the connection string and set `MONGO_URI` in `backend/.env`
+
+- Local MongoDB (native install):
+  - Start MongoDB (`mongod`) and point `MONGO_URI` to `mongodb://localhost:27017/<dbname>`
+
+- Docker (quick local instance):
+
+```bash
+docker run -d --name mongo -p 27017:27017 -v mongo_data:/data/db mongo:latest
+# then use mongodb://localhost:27017/<dbname> as MONGO_URI
+```
+
+Note: the backend expects a `MONGO_URI` environment variable (see `server.js`).
+
+---
+
+## Environment variables
+
+- `MONGO_URI` : MongoDB connection string (required)
+- `JWT_SECRET`: secret used to sign/verify JWT tokens (required for auth-protected routes)
+- `PORT`      : optional port for backend (default 5000)
+
+Place these in `backend/.env` (do not commit `.env` to version control).
+
+---
+
+## Useful scripts
+
+- Frontend (from `frontend`): `npm run dev`, `npm run build`, `npm run preview`
+- Backend (from `backend`): `npm run dev` (nodemon), `npm start`
+
+---
+
+## Troubleshooting
+
+- If the frontend cannot reach the backend, check `backend` is running on port 5000 and CORS origin (`http://localhost:5173`) is allowed in `server.js`.
+- If MongoDB connection fails, verify `MONGO_URI`, network access, and user credentials.
+
+---

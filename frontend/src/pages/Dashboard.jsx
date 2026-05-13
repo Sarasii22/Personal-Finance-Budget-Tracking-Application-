@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';   // ← Clean single import
+import { Link, useNavigate } from 'react-router-dom';  
 import { Bar, Pie } from 'react-chartjs-2';
 import { WhiteButton } from '../components/Buttons';
 import Charts from '../components/Charts';

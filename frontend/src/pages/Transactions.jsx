@@ -36,7 +36,7 @@ const Transactions = () => {
   }, [filters]);
 
   useEffect(() => {
-    // Clear category if it's not valid for the selected type
+    
     if (form.category && !categories.find(c => c.name === form.category && c.type === form.type)) {
       setForm({ ...form, category: '' });
     }
